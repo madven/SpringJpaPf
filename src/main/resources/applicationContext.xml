@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+	<!-- Package needed to be scanned for annotation -->
+	<context:component-scan base-package="com.example"/>
+
+	<!-- Session Factory Declaration -->
+	<bean id="exampleEmf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="dataSource" ref="exampleDataSource" />
+		<property name="packagesToScan" value="com.example"/>
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
+		</property>
+		<property name="jpaProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL57Dialect</prop>
+				<prop key="hibernate.dialect.storage_engine">innodb</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- Data Source Declaration -->
+	<bean id="exampleDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+		<property name="url" value="jdbc:mysql://localhost:3306/exampleDB?useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=false"/>
+		<property name="username" value="root"/>
+		<property name="password" value="111111"/>
+	</bean>
+
+	<!-- Enable the configuration of transactional behavior based on annotations -->
+	<tx:annotation-driven />
+
+	<!-- Transaction Manager is defined -->
+	<bean id="exampleTm" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="exampleEmf"/>
+	</bean>
+
+	<tx:annotation-driven transaction-manager="exampleTm"/>
+
+</beans>
